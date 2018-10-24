@@ -14,51 +14,37 @@ contract TokenManager is Ownable, Pausable {
     }
 
     address public owner;
+    address public token;
 
     Transfer[] public transactions;
 
     mapping(address => uint[]) public transactionIndexesToSender;
-    mapping(bytes32 => address) public tokens;
 
     ERC20 public ERC20Interface;
 
     event TransferSuccessful(address indexed from_, address indexed to_, uint256 amount_);
     event TransferFailed(address indexed from_, address indexed to_, uint256 amount_);
 
-    constructor() public {
+    constructor(address _token) public {
         owner = msg.sender;
+        token = _token;
     }
 
-    function addNewToken(bytes32 symbol_, address address_) public onlyOwner returns (bool) {
-        tokens[symbol_] = address_;
-        return true;
-    }
-
-    function removeToken(bytes32 symbol_) public onlyOwner returns (bool) {
-        require(tokens[symbol_] != 0x0); 
-        delete(tokens[symbol_]);
-        return true;
-    }
-
-    function transferTokens(bytes32 symbol_, address to_, uint256 amount_) public whenNotPaused {
-        require(tokens[symbol_] != 0x0);
+    function transferTokens(address to_, uint256 amount_) public whenNotPaused {
         require(amount_ > 0);
-
-        address contract_ = tokens[symbol_];
         address from_ = msg.sender;
+        ERC20Interface = ERC20(token);
 
-        ERC20Interface = ERC20(contract_);
+        // uint256 transactionId = transactions.push(
+        //     Transfer({
+        //         contract_:  token,
+        //         to_: to_,
+        //         amount_: amount_,
+        //         failed_: true
+        //     })
+        // );
 
-        uint256 transactionId = transactions.push(
-            Transfer({
-                contract_:  contract_,
-                to_: to_,
-                amount_: amount_,
-                failed_: true
-            })
-        );
-
-        transactionIndexesToSender[from_].push(transactionId - 1);
+        // transactionIndexesToSender[from_].push(transactionId - 1);
 
         if (amount_ > ERC20Interface.allowance(from_, address(this))) {
             emit TransferFailed(from_, to_, amount_);
@@ -67,7 +53,7 @@ contract TokenManager is Ownable, Pausable {
 
         ERC20Interface.transferFrom(from_, to_, amount_);
 
-        transactions[transactionId - 1].failed_ = false;
+        // transactions[transactionId - 1].failed_ = false;
 
         emit TransferSuccessful(from_, to_, amount_);
     }

@@ -23,8 +23,14 @@
 }
 
 .token-icon {
-  width: 28px;
-  height: 28px;
+  width: 35px;
+  height: 35px;
+}
+
+.center {
+  left: 50%;
+  margin-top: 16px;
+  transform: translate(-50%, 16%);
 }
 
 @keyframes App-logo-spin {
