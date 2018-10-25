@@ -74,7 +74,7 @@ class App extends Component {
     this.setState({ address: event.target.value, messageError: '' });
   };
 
-  onTokenChange = event => {
+  onAmountTokenChange = event => {
     this.setState({ amountToken: event.target.value, messageError: '' });
   };
 
@@ -183,7 +183,7 @@ class App extends Component {
                     </div>
                     <Input
                       value={this.state.amountToken}
-                      onChange={this.onTokenChange}
+                      onChange={this.onAmountTokenChange}
                       style={{ width: '72%', marginTop: '16px' }}
                       label={{ basic: true, content: token.symbol }}
                       labelPosition="right"
