@@ -2,7 +2,15 @@ import React, { Component, Fragment } from 'react';
 import './App.css';
 import TokenManagerContract from './services/tokenManager';
 import token from './tokens/20Scoops';
-import { Container, Button, Input, Icon, Image, Card } from 'semantic-ui-react';
+import {
+  Container,
+  Button,
+  Input,
+  Icon,
+  Image,
+  Card,
+  Message
+} from 'semantic-ui-react';
 
 const { web3 } = window;
 
@@ -12,7 +20,8 @@ class App extends Component {
     token: null,
     isLoading: false,
     address: '',
-    amountToken: ''
+    amountToken: '',
+    messageError: ''
   };
 
   componentDidMount() {
@@ -62,14 +71,18 @@ class App extends Component {
   };
 
   onAddressChange = event => {
-    this.setState({ address: event.target.value });
+    this.setState({ address: event.target.value, messageError: '' });
   };
 
   onTokenChange = event => {
-    this.setState({ amountToken: event.target.value });
+    this.setState({ amountToken: event.target.value, messageError: '' });
   };
 
   Transfer = () => {
+    if (!this.state.amountToken || !this.state.address) {
+      this.setState({ messageError: 'require amount token and address' });
+      return;
+    }
     this.setState({ isLoading: true });
     const token = this.state.token;
     let contract = web3.eth.contract(token.abi).at(token.address);
@@ -87,11 +100,29 @@ class App extends Component {
             receiver,
             amount,
             (err, response) => {
-              this.setState({ isLoading: false, amountToken: '', address: '' });
+              if (!err) {
+                this.setState({
+                  isLoading: false,
+                  amountToken: '',
+                  address: ''
+                });
+              } else {
+                this.setState({
+                  isLoading: false,
+                  amountToken: '',
+                  address: '',
+                  messageError: err.message
+                });
+              }
             }
           );
         } else {
-          this.setState({ isLoading: false, amountToken: '', address: '' });
+          this.setState({
+            isLoading: false,
+            amountToken: '',
+            address: '',
+            messageError: err.message
+          });
         }
       }
     );
@@ -108,6 +139,14 @@ class App extends Component {
           />
           <Container>
             <div style={{ width: '100%', textAlign: 'center' }}>
+              <Message
+                style={{ margin: '16px' }}
+                negative
+                hidden={!this.state.messageError}
+              >
+                <Message.Header>Oops! Something went wrong</Message.Header>
+                <Message.Content>{this.state.messageError}</Message.Content>
+              </Message>
               <Card className="center" style={{ width: '552px' }}>
                 {token === null ? (
                   <div>Loading...</div>
