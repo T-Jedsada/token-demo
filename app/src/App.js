@@ -146,7 +146,7 @@ class App extends Component {
                       value={this.state.amountToken}
                       onChange={this.onTokenChange}
                       style={{ width: '72%', marginTop: '16px' }}
-                      label={{ basic: true, content: 'SC' }}
+                      label={{ basic: true, content: token.symbol }}
                       labelPosition="right"
                       placeholder="Amount"
                     />
