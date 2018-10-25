@@ -5,7 +5,6 @@ let selectedNetwork = null;
 let supportedNetworks = Object.keys(tokenManagerConfig.networks);
 
 export default class TokenManagerContract {
-
   constructor() {
     throw new Error('Do not instantiate!');
   }
@@ -37,6 +36,10 @@ export default class TokenManagerContract {
         `You must first define the network. Call Contract.setNetwork}`
       );
     return TokenManager;
+  }
+
+  static getAddress() {
+    return tokenManagerConfig.networks[selectedNetwork].address;
   }
 
   static isTokenManagerBytecode(bytecode) {

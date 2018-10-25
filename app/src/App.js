@@ -92,7 +92,7 @@ class App extends Component {
     amount = new web3.BigNumber(amount).toNumber();
 
     contract.approve(
-      '0x275da0ed6b2b1e93aefbe4d1185e794ddd9cbba6',
+      TokenManagerContract.getAddress(),
       amount,
       (err, response) => {
         if (!err) {
