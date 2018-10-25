@@ -15,48 +15,51 @@ class App extends Component {
     amountToken: ''
   };
 
+  componentDidMount() {
+    TokenManagerContract.setNetwork('1234567');
+    this.tokenManager = TokenManagerContract.TokenManager();
+    const account = web3.eth.defaultAccount;
+    this.setState({ account });
+    this.loadBalanceToken(account);
+    this.tokenManager.allEvents((err, response) => {
+      if (!err) {
+        if (response.event === 'TransferSuccessful') {
+          this.loadBalanceToken(this.state.account);
+        }
+      } else {
+        // TODO: something get balance error
+      }
+    });
+  }
+
   loadBalanceToken = account => {
     let contract = web3.eth.contract(token.abi);
     let erc20Token = contract.at(token.address);
-
     erc20Token.balanceOf(account, (err, response) => {
-      console.log('err: ', err);
-      console.log('response: ', response);
       if (!err) {
         let decimal = token.decimal;
-        let balance = response.c[0];
+        let precision = '1e' + decimal;
+        let balance = response.c[0] / precision;
         let name = token.name;
         let symbol = token.symbol;
         let icon = token.icon;
         let abi = token.abi;
         let address = token.address;
-
         balance = balance >= 0 ? balance : 0;
-
-        if (balance > 0) {
-          this.setState({
-            token: {
-              decimal,
-              balance,
-              name,
-              symbol,
-              icon,
-              abi,
-              address
-            }
-          });
-        }
+        this.setState({
+          token: {
+            decimal,
+            balance,
+            name,
+            symbol,
+            icon,
+            abi,
+            address
+          }
+        });
       }
     });
   };
-
-  componentDidMount() {
-    TokenManagerContract.setNetwork('1540388236758');
-    this.tokenManager = TokenManagerContract.TokenManager();
-    const account = web3.eth.defaultAccount;
-    this.setState({ account });
-    this.loadBalanceToken(account);
-  }
 
   onAddressChange = event => {
     this.setState({ address: event.target.value });
@@ -76,7 +79,7 @@ class App extends Component {
     amount = new web3.BigNumber(amount).toNumber();
 
     contract.approve(
-      '0x3d79faf4d165f7fcd5f4f0186fcab44dc7c7f6ea',
+      '0x275da0ed6b2b1e93aefbe4d1185e794ddd9cbba6',
       amount,
       (err, response) => {
         if (!err) {
@@ -85,13 +88,10 @@ class App extends Component {
             amount,
             (err, response) => {
               this.setState({ isLoading: false, amountToken: '', address: '' });
-              console.log('error: ', err);
-              console.log('response: ', response);
             }
           );
         } else {
           this.setState({ isLoading: false, amountToken: '', address: '' });
-          console.log(err);
         }
       }
     );
@@ -99,9 +99,6 @@ class App extends Component {
 
   render() {
     const token = this.state.token;
-    if (token != null) {
-      console.log('POND', token.balance);
-    }
     return (
       <div className="App">
         <Fragment>
@@ -126,7 +123,7 @@ class App extends Component {
                       />
                       <h4 style={{ marginTop: '8px', marginLeft: '6px' }}>
                         {' '}
-                        {token.balance}{' '}
+                        {token.balance.toFixed(3)}{' '}
                       </h4>
                       <h4 style={{ marginTop: '8px', marginLeft: '6px' }}>
                         {' '}

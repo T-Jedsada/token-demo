@@ -8,7 +8,8 @@
     "test": "truffle test --network development",
     "test-coverage": "solidity-coverage",
     "complie": "yarn lint && truffle complie",
-    "deploy": "yarn lint && truffle migrate"
+    "deploy": "yarn lint && truffle migrate",
+    "start-ganache": "ganache-cli --networkId 1234567 --blockTime=0.1 -p 8545"
   },
   "dependencies": {
     "mocha": "^5.2.0",

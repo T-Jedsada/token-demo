@@ -7,7 +7,7 @@ contract TweentyScoopsToken is ERC20, Ownable {
 
     string public constant name = "20ScoopsToken";
     string public constant symbol = "20S";
-    uint8 public constant decimals = 18;
+    uint8 public constant decimals = 5;
 
     uint256 public constant INITIAL_SUPPLY = 10000 * (10 ** uint256(decimals));
 
